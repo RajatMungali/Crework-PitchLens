@@ -124,7 +124,7 @@ const FileUpload = ({
       <div className="max-w-xl mx-auto"
       >
         <div
-          className={`border-2 border-dashed rounded-xl p-8 text-center ${dragActive ? 'border-purple-600 bg-purple-50' :
+          className={`border-2 border-dashed rounded-xl p-8 text-center ${dragActive ? 'border-[#be00e8] bg-purple-50' :
               errorMessage ? 'border-red-400 bg-red-50' : 'border-gray-300'
             } transition-colors hover:border-purple-400`}
           onDragEnter={handleDrag}
@@ -146,11 +146,11 @@ const FileUpload = ({
             className={`flex flex-col items-center ${!isUploading ? 'cursor-pointer' : ''}`}
           >
             {isUploading ? (
-              <Loader2 className="h-12 w-12 text-purple-600 animate-spin" />
+              <Loader2 className="h-12 w-12 text-[#be00e8] animate-spin" />
             ) : errorMessage ? (
               <AlertCircle className="h-12 w-12 text-red-500" />
             ) : (
-              <Upload className="h-12 w-12 text-purple-600" />
+              <Upload className="h-12 w-12 text-[#be00e8]" />
             )}
 
             <h3 className={`mt-4 text-2xl font-semibold ${errorMessage ? 'text-red-600' : 'text-gray-800'

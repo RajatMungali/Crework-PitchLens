@@ -15,15 +15,9 @@ const Navbar = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-2">
-              <PresentationIcon className="h-8 w-8 text-purple-600" />
-              <span className="text-xl font-bold text-gray-800">CreworkAI</span>
+              <PresentationIcon className="h-8 w-8 text-[#be00e8]" />
+              <span className="text-xl font-bold font-inter text-gray-800">CreworkAI</span>
             </Link>
-
-            <div className="flex items-center space-x-6">
-              <Link href="/result" className="text-gray-600 hover:text-purple-600 transition-colors">
-                Analyze Your Deck
-              </Link>
-            </div>
           </div>
         </div>
       </div>

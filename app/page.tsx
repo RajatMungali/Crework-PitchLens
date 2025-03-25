@@ -73,9 +73,9 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="text-center">
-              <h1 className="text-6xl md:text-7xl font-bold text-[#be00e8] mb-6 leading-tight">
-                Perfect Your Pitch Deck<br /> with AI
+            <div className="text-center font-inter">
+              <h1 className="text-6xl md:text-7xl font-bold text-black mb-6 leading-tight">
+                Perfect Your <span className='text-[#be00e8]'> Pitch <br/> Deck </span> with AI
               </h1>
               <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
                 Get instant, professional feedback on your pitch deck. Our AI analyzes every aspect to help you create a compelling story that investors love.
@@ -88,7 +88,7 @@ export default function Home() {
               >
                 <button 
                   onClick={handleAnalyzeDeck}
-                  className="bg-[#be00e8] hover:bg-[#9a00c4] text-white font-bold py-4 px-8 rounded-full text-xl transition-colors duration-300 ease-in-out shadow-lg hover:shadow-xl"
+                  className="bg-[#be00e8] hover:bg-[#b953c7] text-white font-bold py-4 px-8 rounded-full text-xl transition-colors duration-300 font-inter ease-in-out shadow-lg hover:shadow-xl"
                 >
                   Analyze the Deck
                 </button>

@@ -41,11 +41,11 @@ export async function POST(request: Request) {
       }
     };
 
-    const prompt = `You are an expert pitch deck analyst with experience in venture capital. Analyze this pitch deck and provide a detailed analysis in JSON format.
+    const prompt = `You are an expert pitch deck analyst with experience in venture capital . Analyze this pitch deck and provide a detailed analysis in JSON format.
 
 IMPORTANT: Return ONLY raw JSON with no markdown formatting, code blocks, or explanatory text. Do not wrap the JSON in \`\`\`json or any other tags.
 
-The response MUST follow this precise structure:
+The response MUST follow this precise structure considering the given file is a pitch deck not any random document:
 
 {
   "score": <number between 0-100, representing overall quality ( try to not get round figured number )>,
