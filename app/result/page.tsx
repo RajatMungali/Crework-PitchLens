@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Upload, Loader2, AlertCircle, CheckCircle, Award, BarChart2, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion } from 'framer-motion';
-import AnimatedBackground from '@/components/AnimatedBackground';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -31,7 +30,6 @@ function App() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <AnimatedBackground />
       <Navbar />
       
       <main className="flex-grow container mx-auto px-4 py-12">
