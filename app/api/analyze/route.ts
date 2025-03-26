@@ -4,7 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '10mb',
+      sizeLimit: "10mb",
     },
   },
 };
@@ -48,7 +48,7 @@ IMPORTANT: Return ONLY raw JSON with no markdown formatting, code blocks, or exp
 The response MUST follow this precise structure considering the given file is a pitch deck not any random document:
 
 {
-  "score": <number between 0-100, representing overall quality ( try to not get round figured number )>,
+  "score": <number between 0-100, representing overall quality ( try to not get round figured number and rate the decks a slight strictly )>,
   "spelling": <number between 0-100, representing spelling/grammar quality>,
   "structure": <number between 0-100, representing structural quality>,
   "deckLength": <number of slides or 0 if unable to determine>,
