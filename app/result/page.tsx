@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import { Upload, Loader2, AlertCircle, CheckCircle, Award, BarChart2, BookOpen, ChevronDown, ChevronUp } from 'lucide-react';
+import { Upload, Loader2, AlertCircle, CheckCircle, Award, BarChart2, BookOpen, ChevronDown, ChevronUp, Target } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -11,7 +11,7 @@ interface FeedbackSectionProps {
   icon: React.ReactNode;
   expanded: boolean;
   toggleExpanded: () => void;
-  content: string;
+  content: string | React.ReactNode;
   className?: string;
 }
 
@@ -33,7 +33,7 @@ function App() {
     <div className="flex flex-col min-h-screen">
       <GradientBackground />
       <Navbar />
-      
+
       <main className="flex-grow container mx-auto px-4 py-12">
         {!analysisResults ? (
           <FileUpload
@@ -108,8 +108,8 @@ const FileUpload = ({
     if (files?.[0]) {
       const file = files[0];
 
-      if (file.size > 10 * 1024 * 1024) {
-        setErrorMessage('File size must be less than 10MB');
+      if (file.size > 5 * 1024 * 1024) {
+        setErrorMessage('File size must be less than 4.5MB');
         return;
       }
 
@@ -167,7 +167,7 @@ const FileUpload = ({
       <div className="max-w-xl mx-auto px-4">
         <div
           className={`border-2 border-dashed rounded-xl p-8 text-center ${dragActive ? 'border-[#be00e8] bg-purple-50' :
-              errorMessage ? 'border-red-400 bg-red-50' : 'border-gray-300'
+            errorMessage ? 'border-red-400 bg-red-50' : 'border-gray-300'
             } transition-colors hover:border-purple-400`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
@@ -211,7 +211,7 @@ const FileUpload = ({
 
             {!errorMessage && (
               <p className="mt-1 text-sm text-gray-400">
-                Maximum file size: 10MB
+                Maximum file size: 4.5MB
               </p>
             )}
 
@@ -238,7 +238,7 @@ interface ResultsPageProps {
     structure: number;
     deckLength: number;
     clarity: number;
-    wordCount: number;
+    slideBySlideReview?: SlideReview[];
     feedback: {
       content: string;
       design: string;
@@ -254,6 +254,12 @@ interface ResultsPageProps {
     lastModified: number;
   } | null;
   onReupload: () => void;
+}
+
+interface SlideReview {
+  slideNumber: number;
+  title: string;
+  review: string;
 }
 
 const ResultsPage = ({ analysisResults, pdfContent, onReupload }: ResultsPageProps) => {
@@ -278,6 +284,47 @@ const ResultsPage = ({ analysisResults, pdfContent, onReupload }: ResultsPagePro
     } else {
       setExpandedSection(section);
     }
+  };
+
+    const renderSlideReviews = () => {
+    const slideReviews = analysisResults.slideBySlideReview || [];
+    
+    if (slideReviews.length === 0) {
+      return (
+        <p className="text-gray-600 text-sm">
+          No detailed slide reviews available at this time.
+        </p>
+      );
+    }
+  
+    return slideReviews.map((slide, index) => {
+      // More robust pattern matching for section splitting
+      const reviewRegex = /^([\s\S]*?)\s*Areas for Improvement:\s*([\s\S]*)$/i;
+      const matches = slide.review.match(reviewRegex);
+      
+      let strengthsContent = slide.review;
+      let improvementContent = 'No specific areas for improvement noted.';
+      
+      if (matches && matches.length >= 3) {
+        strengthsContent = matches[1].replace(/^Strengths:\s*/i, '').trim();
+        improvementContent = matches[2].trim();
+      }
+      
+      return (
+        <div 
+          key={index} 
+          className="bg-purple-50 rounded-lg p-4 mb-3 border border-purple-100"
+        >
+          <div className="text-gray-700">
+            <p className="mb-2"> <span className='text-purple-700 font-semibold'> Slide {slide.slideNumber}: </span> {slide.title}</p>
+            <p className="font-semibold">Strengths:</p>
+            <p>{strengthsContent}</p>
+            <p className="font-semibold mt-2">Areas for Improvement:</p>
+            <p>{improvementContent}</p>
+          </div>
+        </div>
+      );
+    });
   };
 
   return (
@@ -375,6 +422,15 @@ const ResultsPage = ({ analysisResults, pdfContent, onReupload }: ResultsPagePro
             className="border-t border-gray-200"
           />
 
+          <FeedbackSection
+            title="Slide-by-Slide Review"
+            icon={<Target className="h-5 w-5" />}
+            expanded={expandedSection === 'slides'}
+            toggleExpanded={() => toggleSection('slides')}
+            content={renderSlideReviews()}
+            className="border-t border-gray-200"
+          />
+
           <div className="p-4 sm:p-6 border-t border-gray-200">
             <div className="bg-purple-50 rounded-lg p-4">
               <div className="flex items-start">
@@ -442,7 +498,11 @@ const FeedbackSection = ({ title, icon, expanded, toggleExpanded, content, class
     </button>
     {expanded && (
       <div className="px-4 sm:px-6 pb-4 sm:pb-6">
-        <p className="text-gray-700 text-sm sm:text-base">{content}</p>
+        {typeof content === 'string' ? (
+          <p className="text-gray-700 text-sm sm:text-base">{content}</p>
+        ) : (
+          content
+        )}
       </div>
     )}
   </div>

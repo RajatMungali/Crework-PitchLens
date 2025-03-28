@@ -56,7 +56,7 @@ const FileUpload = ({
       const file = files[0];
 
       if (file.size > 10 * 1024 * 1024) {
-        setErrorMessage('File size must be less than 10MB');
+        setErrorMessage('File size must be less than 4.5MB');
         return;
       }
 
@@ -169,7 +169,7 @@ const FileUpload = ({
 
             {!errorMessage && (
               <p className="mt-1 text-sm text-gray-400">
-                Maximum file size: 10MB
+                Maximum file size: 4.5MB
               </p>
             )}
 

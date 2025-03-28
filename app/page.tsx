@@ -75,7 +75,7 @@ export default function Home() {
           >
             <div className="text-center font-inter">
               <h1 className="text-6xl md:text-7xl font-bold text-black mb-6 leading-tight">
-                Perfect Your <span className='text-[#be00e8]'> Pitch <br/> Deck </span> with AI
+                Improve Your <span className='text-[#be00e8]'> Pitch <br/> Deck </span> with AI
               </h1>
               <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
                 Get instant, professional feedback on your pitch deck. Our AI analyzes every aspect to help you create a compelling story that investors love.
@@ -145,7 +145,7 @@ export default function Home() {
               <div className="text-center mb-16">
                 <h2 className="text-4xl font-bold text-gray-900 mb-4">What Users Say</h2>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                  Join hundreds of founders who've improved their pitch decks with CreworkAI
+                  Join hundreds of founders who've improved their pitch decks with QuickFunds
                 </p>
               </div>
             </motion.div>

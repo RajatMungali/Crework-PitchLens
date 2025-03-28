@@ -40,26 +40,59 @@ export async function POST(request: Request) {
         mimeType: "application/pdf"
       }
     };
+    const prompt = `You are a hyper-critical venture capital pitch deck analyst with 20+ years of experience evaluating startup investments. 
 
-    const prompt = `You are an expert pitch deck analyst with experience in venture capital . Analyze this pitch deck and provide a detailed analysis in JSON format.
+CRITICAL SCORING GUIDELINES:
 
-IMPORTANT: Return ONLY raw JSON with no markdown formatting, code blocks, or explanatory text. Do not wrap the JSON in \`\`\`json or any other tags.
+When calculating the SINGLE overall score (0-100), consider these weighted factors:
+- Market Potential: 25%
+- Problem-Solution Clarity: 20%
+- Business Model Viability: 15%
+- Team Credibility: 15%
+- Financial Projections: 10%
+- Presentation Quality: 10%
+- Innovation Factor: 5%
 
-The response MUST follow this precise structure considering the given file is a pitch deck not any random document:
+SCORING PRINCIPLES:
+- NEVER use round numbers (avoid 75, 80, 90)
+- Use precise, granular scores (e.g., 73, 86, 91) and try to use specific scores , not ranges
+- Penalize vagueness and reward specificity
+- Penalize generic statements and reward unique insights  
+- Reward concrete, data-backed claims and penalize generalized without data information
+- Minor imperfections dramatically reduce score
 
+SLIDE BY SLIDE Review Principle
+- Must use Areas for Improvement keyword then tell the details of that
+- Before the Areas for Improvement keyword , strength content should be there but without the keyword
+
+RESPONSE MUST FOLLOW EXACT PREVIOUS STRUCTURE:
 {
-  "score": <number between 0-100, representing overall quality ( try to not get round figured number and rate the decks a slight strictly )>,
-  "spelling": <number between 0-100, representing spelling/grammar quality>,
-  "structure": <number between 0-100, representing structural quality>,
-  "deckLength": <number of slides or 0 if unable to determine>,
-  "clarity": <number between 0-100, representing clarity of messaging>,
+  "score": <precise number between 0-100>,
+  "spelling": <precise number between 0-100>,
+  "structure": <precise number between 0-100>,
+  "deckLength": <number of slides>,
+  "clarity": <precise number between 0-100>,
+  "slideBySlideReview": [
+    {
+      "slideNumber": <number>,
+      "title": "<slide title>",
+      "review": "<single paragraph, hyper-analytical review>"
+    }
+  ],
   "feedback": {
-    "content": "<1-3 paragraphs analyzing the content, value proposition, market analysis, business model, etc. Be specific about what works and what doesn't>",
-    "design": "<1-3 paragraphs analyzing the visual design, layout, readability, graphics, and presentation quality>",
-    "spelling": "<Specific list of spelling and grammar errors found, or 'No major spelling or grammar issues detected' if none are found>"
+    "content": "<brutally honest content analysis>",
+    "design": "<design critique with specific recommendations include strength and area of improvement>",
+    "spelling": "<exhaustive spelling/grammar error list>"
   },
-  "recommendation": "<1-2 sentences with the MOST important actionable suggestion to improve the deck>"
+  "recommendation": "<most critical improvement needed>"
 }
+
+EXECUTION INSTRUCTIONS:
+- Be ruthlessly analytical
+- Provide razor-sharp, specific feedback
+- No generic statements
+- Quantify everything possible
+- Expose even minor weaknesses
 
 The JSON response must be directly parseable with JSON.parse() - no text before or after, no markdown formatting.`;
 
@@ -70,38 +103,41 @@ The JSON response must be directly parseable with JSON.parse() - no text before 
     const analysisText = response.text();
 
     console.log("Received response from Gemini API");
+    // console.log("Raw response:", analysisText);
 
     let cleanResponse = analysisText;
-    if (cleanResponse.includes("```")) {
-      cleanResponse = cleanResponse.replace(/```json\n|\n```|```/g, "");
+    const jsonExtractors = [
+      () => cleanResponse.replace(/```json\n|\n```|```/g, ""),
+      () => {
+        const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
+        return jsonMatch ? jsonMatch[0] : null;
+      },
+      () => {
+        const match = analysisText.match(/\{[\s\S]*?"score"[\s\S]*?\}/);
+        return match ? match[0] : null;
+      }
+    ];
+
+    let analysisData = null;
+    for (const extractor of jsonExtractors) {
+      try {
+        const extractedJson = extractor();
+        if (extractedJson) {
+          analysisData = JSON.parse(extractedJson);
+          console.log("Successfully parsed JSON!");
+          break;
+        }
+      } catch (e) {
+        console.error("JSON extraction failed:", e);
+      }
     }
 
-    let analysisData;
-    try {
-      analysisData = JSON.parse(cleanResponse);
-      console.log("Analysis successfully parsed as JSON");
-    } catch (e) {
-      console.error("Failed to parse JSON response from Gemini:", e);
-
-      const jsonMatch = analysisText.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try {
-          analysisData = JSON.parse(jsonMatch[0]);
-          console.log("Extracted and parsed JSON from response");
-        } catch (e2) {
-          console.error("Failed to extract valid JSON:", e2);
-          return NextResponse.json({
-            error: "Failed to parse AI response",
-            rawResponse: analysisText
-          }, { status: 500 });
-        }
-      } else {
-        console.error("No JSON content found in response");
-        return NextResponse.json({
-          error: "AI response did not contain JSON data",
-          rawResponse: analysisText
-        }, { status: 500 });
-      }
+    if (!analysisData) {
+      console.error("Could not extract valid JSON from response");
+      return NextResponse.json({
+        error: "Failed to parse AI response",
+        rawResponse: analysisText
+      }, { status: 500 });
     }
 
     const validatedData = {
@@ -110,7 +146,7 @@ The JSON response must be directly parseable with JSON.parse() - no text before 
       structure: ensureNumberInRange(analysisData.structure, 0, 100),
       deckLength: ensureNumber(analysisData.deckLength, 0),
       clarity: ensureNumberInRange(analysisData.clarity, 0, 100),
-      wordCount: ensureNumber(analysisData.wordCount, 0),
+      slideBySlideReview: analysisData.slideBySlideReview || [],
       feedback: {
         content: analysisData.feedback?.content || "Content analysis unavailable",
         design: analysisData.feedback?.design || "Design analysis unavailable",

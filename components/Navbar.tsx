@@ -16,7 +16,7 @@ const Navbar = () => {
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-2">
               <PresentationIcon className="h-8 w-8 text-[#be00e8]" />
-              <span className="text-xl font-bold font-inter text-gray-800">CreworkAI</span>
+              <span className="text-xl font-bold font-inter text-gray-800">QuickFunds</span>
             </Link>
           </div>
         </div>
