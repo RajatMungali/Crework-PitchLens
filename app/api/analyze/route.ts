@@ -13,9 +13,9 @@ export async function POST(request: Request) {
   console.log("API route started - Gemini API approach");
 
   try {
-    if (!process.env.GOOGLE_AI_API_KEY) {
+    if (!process.env.GEMINI_API_KEY) {
       console.error("Missing Google AI API key");
-      return NextResponse.json({ error: "Google AI API key not configured" }, { status: 500 });
+      return NextResponse.json({ error: "Gemini API key not configured" }, { status: 500 });
     }
 
     const formData = await request.formData();
@@ -29,8 +29,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Please upload a PDF file" }, { status: 400 });
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
     const fileBytes = await file.arrayBuffer();
 
