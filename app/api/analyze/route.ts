@@ -29,8 +29,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Please upload a PDF file" }, { status: 400 });
     }
 
+
     const genAI = new GoogleGenerativeAI(process.env.GOOGLE_AI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
     const fileBytes = await file.arrayBuffer();
 
