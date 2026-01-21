@@ -11,8 +11,6 @@ export const config = {
 
 export async function POST(request: Request) {
   console.log("API route started - Gemini API approach");
-  // Triggering fresh build after security upgrade to 15.5.9
-
 
   try {
     if (!process.env.GOOGLE_AI_API_KEY) {
