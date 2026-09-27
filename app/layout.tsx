@@ -1,13 +1,14 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Outfit } from 'next/font/google';
-import { Analytics } from '@vercel/analytics/react';
+import "./globals.css";
+import type { Metadata } from "next";
+import { Outfit } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 
-const outfit = Outfit({ subsets: ['latin'] });
+const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'QuickFunds - AI-Powered Pitch Deck Analyzer',
-  description: 'Get instant feedback on your pitch deck with our AI-powered analyzer. Improve your pitch and increase your chances of success.'
+  title: "Crework Pitch Deck Analyzer",
+  description:
+    "Get instant feedback on your pitch deck with our AI-powered analyzer. Improve your pitch and increase your chances of success.",
 };
 
 export default function RootLayout({

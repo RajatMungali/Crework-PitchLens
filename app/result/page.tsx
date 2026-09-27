@@ -1,10 +1,20 @@
-"use client"
-import React, { useState } from 'react';
-import { Upload, Loader2, AlertCircle, CheckCircle, Award, BarChart2, BookOpen, ChevronDown, ChevronUp, Target } from 'lucide-react';
-import { motion } from 'framer-motion';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import GradientBackground from '@/components/GradientBackground';
+"use client";
+import React, { useState } from "react";
+import {
+  Upload,
+  Loader2,
+  AlertCircle,
+  CheckCircle,
+  Award,
+  BarChart2,
+  BookOpen,
+  ChevronDown,
+  ChevronUp,
+  Target,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 interface FeedbackSectionProps {
   title: string;
@@ -30,8 +40,7 @@ function App() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <GradientBackground />
+    <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
 
       <main className="flex-grow container mx-auto px-4 py-12">
@@ -72,7 +81,7 @@ const FileUpload = ({
   setAnalysisResults,
   setPdfContent,
   errorMessage,
-  setErrorMessage
+  setErrorMessage,
 }: FileUploadProps) => {
   const [dragActive, setDragActive] = useState(false);
 
@@ -109,12 +118,12 @@ const FileUpload = ({
       const file = files[0];
 
       if (file.size > 5 * 1024 * 1024) {
-        setErrorMessage('File size must be less than 4.5MB');
+        setErrorMessage("File size must be less than 4.5MB");
         return;
       }
 
-      if (!file.type.includes('pdf')) {
-        setErrorMessage('Please upload a PDF file');
+      if (!file.type.includes("pdf")) {
+        setErrorMessage("Please upload a PDF file");
         return;
       }
 
@@ -128,30 +137,32 @@ const FileUpload = ({
           size: file.size,
           type: file.type,
           url: pdfUrl,
-          lastModified: file.lastModified
+          lastModified: file.lastModified,
         };
 
         setPdfContent(pdfMetadata);
 
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append("file", file);
 
-        const response = await fetch('/api/analyze', {
-          method: 'POST',
+        const response = await fetch("/api/analyze", {
+          method: "POST",
           body: formData,
         });
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to analyze pitch deck');
+          throw new Error(errorData.error || "Failed to analyze pitch deck");
         }
 
         const data = await response.json();
         setAnalysisResults(data);
-
       } catch (error: any) {
-        console.error('Error:', error);
-        setErrorMessage(error.message || 'Failed to analyze the pitch deck. Please try again.');
+        console.error("Error:", error);
+        setErrorMessage(
+          error.message ||
+            "Failed to analyze the pitch deck. Please try again.",
+        );
       } finally {
         setIsUploading(false);
       }
@@ -166,14 +177,23 @@ const FileUpload = ({
     >
       <div className="max-w-xl mx-auto px-4">
         <div
-          className={`border-2 border-dashed rounded-xl p-8 text-center ${dragActive ? 'border-[#be00e8] bg-purple-50' :
-            errorMessage ? 'border-red-400 bg-red-50' : 'border-gray-300'
-            } transition-colors hover:border-purple-400`}
+          className={`relative rounded-2xl border-2 border-black p-10 text-center transition-all ${
+            dragActive
+              ? "bg-beige shadow-comic-sm scale-[1.01]"
+              : errorMessage
+                ? "bg-white shadow-comic-sm border-red-500"
+                : "bg-white shadow-comic-sm"
+          }`}
           onDragEnter={handleDrag}
           onDragLeave={handleDrag}
           onDragOver={handleDrag}
           onDrop={handleDrop}
         >
+          <span className="corner-dot -left-1.5 -top-1.5" />
+          <span className="corner-dot -right-1.5 -top-1.5" />
+          <span className="corner-dot -left-1.5 -bottom-1.5" />
+          <span className="corner-dot -right-1.5 -bottom-1.5" />
+
           <input
             type="file"
             accept=".pdf"
@@ -185,32 +205,40 @@ const FileUpload = ({
 
           <label
             htmlFor="file-upload"
-            className={`flex flex-col items-center ${!isUploading ? 'cursor-pointer' : ''}`}
+            className={`flex flex-col items-center ${!isUploading ? "cursor-pointer" : ""}`}
           >
-            {isUploading ? (
-              <Loader2 className="h-12 w-12 text-[#be00e8] animate-spin" />
-            ) : errorMessage ? (
-              <AlertCircle className="h-12 w-12 text-red-500" />
-            ) : (
-              <Upload className="h-12 w-12 text-[#be00e8]" />
-            )}
+            <span className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-black bg-beige">
+              {isUploading ? (
+                <Loader2 className="h-8 w-8 animate-spin" />
+              ) : errorMessage ? (
+                <AlertCircle className="h-8 w-8 text-red-600" />
+              ) : (
+                <Upload className="h-8 w-8" />
+              )}
+            </span>
 
-            <h3 className={`mt-4 text-2xl font-semibold ${errorMessage ? 'text-red-600' : 'text-gray-800'
-              }`}>
-              {isUploading ? 'Analyzing your deck...' :
-                errorMessage ? 'Error' : 'Upload your pitch deck'}
+            <h3
+              className={`mt-5 font-grotesk text-2xl font-bold ${
+                errorMessage ? "text-red-600" : "text-black"
+              }`}
+            >
+              {isUploading
+                ? "Analyzing your deck..."
+                : errorMessage
+                  ? "Error"
+                  : "Upload your pitch deck"}
             </h3>
 
             {errorMessage ? (
               <p className="mt-2 text-red-600">{errorMessage}</p>
             ) : (
-              <p className="mt-2 text-gray-600">
+              <p className="mt-2 text-neutral-600">
                 Drop your PDF here or click to browse
               </p>
             )}
 
             {!errorMessage && (
-              <p className="mt-1 text-sm text-gray-400">
+              <p className="mt-1 text-sm text-neutral-400">
                 Maximum file size: 4.5MB
               </p>
             )}
@@ -218,7 +246,7 @@ const FileUpload = ({
             {errorMessage && (
               <button
                 onClick={() => setErrorMessage(null)}
-                className="mt-4 px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
+                className="mt-5 rounded-full border-2 border-black bg-white px-5 py-2 font-grotesk text-sm font-semibold shadow-comic-sm comic-press"
                 type="button"
               >
                 Try Again
@@ -262,20 +290,33 @@ interface SlideReview {
   review: string;
 }
 
-const ResultsPage = ({ analysisResults, pdfContent, onReupload }: ResultsPageProps) => {
-  const [expandedSection, setExpandedSection] = useState<string | null>('content');
+const ResultsPage = ({
+  analysisResults,
+  pdfContent,
+  onReupload,
+}: ResultsPageProps) => {
+  const [expandedSection, setExpandedSection] = useState<string | null>(
+    "content",
+  );
 
-  const getScoreColor = (score: number) => {
-    if (score >= 85) return 'bg-gradient-to-r from-purple-400 to-purple-600';
-    if (score >= 70) return 'bg-gradient-to-r from-purple-300 to-purple-500';
-    if (score >= 50) return 'bg-gradient-to-r from-yellow-400 to-orange-500';
-    return 'bg-gradient-to-r from-red-400 to-red-600';
+  const getScoreLabel = (score: number) => {
+    if (score >= 85) return "Strong";
+    if (score >= 70) return "Promising";
+    if (score >= 50) return "Needs work";
+    return "Not ready";
+  };
+
+  const getScoreDot = (score: number) => {
+    if (score >= 85) return "bg-emerald-500";
+    if (score >= 70) return "bg-amber-400";
+    if (score >= 50) return "bg-amber-500";
+    return "bg-red-500";
   };
 
   const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' bytes';
-    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
-    else return (bytes / 1048576).toFixed(1) + ' MB';
+    if (bytes < 1024) return bytes + " bytes";
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+    else return (bytes / 1048576).toFixed(1) + " MB";
   };
 
   const toggleSection = (section: string) => {
@@ -286,41 +327,43 @@ const ResultsPage = ({ analysisResults, pdfContent, onReupload }: ResultsPagePro
     }
   };
 
-    const renderSlideReviews = () => {
+  const renderSlideReviews = () => {
     const slideReviews = analysisResults.slideBySlideReview || [];
-    
+
     if (slideReviews.length === 0) {
       return (
-        <p className="text-gray-600 text-sm">
+        <p className="text-neutral-600 text-sm">
           No detailed slide reviews available at this time.
         </p>
       );
     }
-  
+
     return slideReviews.map((slide, index) => {
-      // More robust pattern matching for section splitting
       const reviewRegex = /^([\s\S]*?)\s*Areas for Improvement:\s*([\s\S]*)$/i;
       const matches = slide.review.match(reviewRegex);
-      
+
       let strengthsContent = slide.review;
-      let improvementContent = 'No specific areas for improvement noted.';
-      
+      let improvementContent = "No specific areas for improvement noted.";
+
       if (matches && matches.length >= 3) {
-        strengthsContent = matches[1].replace(/^Strengths:\s*/i, '').trim();
+        strengthsContent = matches[1].replace(/^Strengths:\s*/i, "").trim();
         improvementContent = matches[2].trim();
       }
-      
+
       return (
-        <div 
-          key={index} 
-          className="bg-purple-50 rounded-lg p-4 mb-3 border border-purple-100"
+        <div
+          key={index}
+          className="rounded-xl border-2 border-black bg-beige p-4 mb-3 shadow-comic-sm"
         >
-          <div className="text-gray-700">
-            <p className="mb-2"> <span className='text-purple-700 font-semibold'> Slide {slide.slideNumber}: </span> {slide.title}</p>
-            <p className="font-semibold">Strengths:</p>
-            <p>{strengthsContent}</p>
-            <p className="font-semibold mt-2">Areas for Improvement:</p>
-            <p>{improvementContent}</p>
+          <div className="text-neutral-800">
+            <p className="mb-2 font-grotesk">
+              <span className="font-bold">Slide {slide.slideNumber}:</span>{" "}
+              {slide.title}
+            </p>
+            <p className="font-semibold">Strengths</p>
+            <p className="text-sm">{strengthsContent}</p>
+            <p className="font-semibold mt-2">Areas for Improvement</p>
+            <p className="text-sm">{improvementContent}</p>
           </div>
         </div>
       );
@@ -334,54 +377,66 @@ const ResultsPage = ({ analysisResults, pdfContent, onReupload }: ResultsPagePro
       transition={{ duration: 0.5 }}
     >
       <div className="max-w-4xl mx-auto p-4 sm:p-6">
-        <div className="bg-white rounded-t-xl shadow-sm border border-gray-200 p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+        <div className="rounded-2xl border-2 border-black bg-white p-4 sm:p-6 shadow-comic">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-center sm:text-left">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Deck Analysis Results</h1>
+              <h1 className="font-grotesk text-xl sm:text-2xl font-bold text-black">
+                Deck Analysis Results
+              </h1>
               {pdfContent && (
-                <p className="text-gray-600 mt-1 text-sm sm:text-base">{pdfContent.name}</p>
+                <p className="text-neutral-600 mt-1 text-sm sm:text-base">
+                  {pdfContent.name}
+                </p>
               )}
             </div>
-            <div className={`${getScoreColor(analysisResults.score)} text-white rounded-xl p-3 sm:p-4 flex items-center justify-center min-w-24 sm:min-w-28`}>
-              <span className="text-2xl sm:text-3xl font-bold">{analysisResults.score.toFixed(1)}</span>
+            <div className="flex flex-col items-center gap-1.5 rounded-2xl border-2 border-black bg-black px-5 py-3 text-white">
+              <span className="font-grotesk text-3xl font-bold leading-none">
+                {analysisResults.score.toFixed(0)}
+              </span>
+              <span className="flex items-center gap-1.5 text-xs font-medium text-neutral-300">
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${getScoreDot(analysisResults.score)}`}
+                />
+                {getScoreLabel(analysisResults.score)}
+              </span>
             </div>
           </div>
         </div>
 
         {pdfContent && (
-          <div className="bg-white border-x border-gray-200">
-            <div className="p-4 sm:p-6">
-              <iframe
-                src={pdfContent.url}
-                className="w-full h-64 sm:h-96 border border-gray-200 rounded-lg"
-                title="PDF Preview"
-              />
-            </div>
+          <div className="mt-4 rounded-2xl border-2 border-black bg-white p-4 sm:p-6 shadow-comic-sm">
+            <iframe
+              src={pdfContent.url}
+              className="w-full h-64 sm:h-96 rounded-xl border-2 border-black"
+              title="PDF Preview"
+            />
           </div>
         )}
 
-        <div className="bg-purple-50 p-4 sm:p-6 border-x border-gray-200">
-          <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">Metrics Overview</h2>
+        <div className="mt-4 rounded-2xl border-2 border-black bg-beige p-4 sm:p-6 shadow-comic-sm">
+          <h2 className="font-grotesk text-base sm:text-lg font-bold text-black mb-4">
+            Metrics Overview
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             <MetricCard
               title="Spelling & Grammar"
               value={analysisResults.spelling}
-              icon={<CheckCircle className="h-5 w-5 text-purple-600" />}
+              icon={<CheckCircle className="h-5 w-5" />}
             />
             <MetricCard
               title="Structure"
               value={analysisResults.structure}
-              icon={<BarChart2 className="h-5 w-5 text-purple-600" />}
+              icon={<BarChart2 className="h-5 w-5" />}
             />
             <MetricCard
               title="Deck Length"
               value={analysisResults.deckLength}
-              icon={<BookOpen className="h-5 w-5 text-purple-600" />}
+              icon={<BookOpen className="h-5 w-5" />}
             />
             <MetricCard
               title="Clarity"
               value={analysisResults.clarity}
-              icon={<Award className="h-5 w-5 text-purple-600" />}
+              icon={<Award className="h-5 w-5" />}
             />
 
             {pdfContent && (
@@ -389,55 +444,59 @@ const ResultsPage = ({ analysisResults, pdfContent, onReupload }: ResultsPagePro
                 title="File Size"
                 value={formatFileSize(pdfContent.size)}
                 suffix=""
-                icon={<Award className="h-5 w-5 text-purple-600" />}
+                icon={<Award className="h-5 w-5" />}
               />
             )}
           </div>
         </div>
 
-        <div className="bg-white rounded-b-xl shadow-sm border border-t-0 border-gray-200">
+        <div className="mt-4 rounded-2xl border-2 border-black bg-white shadow-comic-sm overflow-hidden">
           <FeedbackSection
             title="Content Feedback"
             icon={<BookOpen className="h-5 w-5" />}
-            expanded={expandedSection === 'content'}
-            toggleExpanded={() => toggleSection('content')}
+            expanded={expandedSection === "content"}
+            toggleExpanded={() => toggleSection("content")}
             content={analysisResults.feedback.content}
           />
 
           <FeedbackSection
             title="Design Feedback"
             icon={<Award className="h-5 w-5" />}
-            expanded={expandedSection === 'design'}
-            toggleExpanded={() => toggleSection('design')}
+            expanded={expandedSection === "design"}
+            toggleExpanded={() => toggleSection("design")}
             content={analysisResults.feedback.design}
-            className="border-t border-gray-200"
+            className="border-t-2 border-black"
           />
 
           <FeedbackSection
             title="Spelling & Grammar"
             icon={<CheckCircle className="h-5 w-5" />}
-            expanded={expandedSection === 'spelling'}
-            toggleExpanded={() => toggleSection('spelling')}
+            expanded={expandedSection === "spelling"}
+            toggleExpanded={() => toggleSection("spelling")}
             content={analysisResults.feedback.spelling}
-            className="border-t border-gray-200"
+            className="border-t-2 border-black"
           />
 
           <FeedbackSection
             title="Slide-by-Slide Review"
             icon={<Target className="h-5 w-5" />}
-            expanded={expandedSection === 'slides'}
-            toggleExpanded={() => toggleSection('slides')}
+            expanded={expandedSection === "slides"}
+            toggleExpanded={() => toggleSection("slides")}
             content={renderSlideReviews()}
-            className="border-t border-gray-200"
+            className="border-t-2 border-black"
           />
 
-          <div className="p-4 sm:p-6 border-t border-gray-200">
-            <div className="bg-purple-50 rounded-lg p-4">
+          <div className="p-4 sm:p-6 border-t-2 border-black">
+            <div className="rounded-xl border-2 border-black bg-beige p-4">
               <div className="flex items-start">
-                <AlertCircle className="h-5 w-5 text-purple-600 mt-0.5 mr-2 flex-shrink-0" />
+                <AlertCircle className="h-5 w-5 mt-0.5 mr-2 flex-shrink-0" />
                 <div>
-                  <h3 className="font-semibold text-gray-800">Increase your score by</h3>
-                  <p className="text-gray-700 mt-1">{analysisResults.recommendation}</p>
+                  <h3 className="font-grotesk font-bold text-black">
+                    Increase your score by
+                  </h3>
+                  <p className="text-neutral-700 mt-1 text-sm sm:text-base">
+                    {analysisResults.recommendation}
+                  </p>
                 </div>
               </div>
             </div>
@@ -445,17 +504,29 @@ const ResultsPage = ({ analysisResults, pdfContent, onReupload }: ResultsPagePro
         </div>
 
         <div className="mt-6 flex justify-center">
-          <button
+          <motion.button
             onClick={onReupload}
-            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="inline-flex items-center gap-2 rounded-full border-2 border-black bg-black px-6 py-3 font-grotesk font-semibold text-white shadow-comic comic-press"
           >
             Re-upload
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="17 8 12 3 7 8"></polyline>
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
-          </button>
+          </motion.button>
         </div>
       </div>
     </motion.div>
@@ -470,36 +541,51 @@ interface MetricCardProps {
 }
 
 const MetricCard = ({ title, value, icon, suffix = "" }: MetricCardProps) => (
-  <div className="bg-white rounded-lg p-3 sm:p-4 shadow-sm border border-gray-200">
+  <div className="rounded-xl border-2 border-black bg-white p-3 sm:p-4 shadow-comic-sm">
     <div className="flex justify-between items-center">
       <div className="flex items-center">
         {icon}
-        <h3 className="text-xs sm:text-sm font-medium text-gray-700 ml-2">{title}</h3>
+        <h3 className="text-xs sm:text-sm font-medium text-neutral-700 ml-2">
+          {title}
+        </h3>
       </div>
-      <span className="text-base sm:text-xl font-bold text-gray-900">{value}{suffix}</span>
+      <span className="font-grotesk text-base sm:text-xl font-bold text-black">
+        {value}
+        {suffix}
+      </span>
     </div>
   </div>
 );
 
-const FeedbackSection = ({ title, icon, expanded, toggleExpanded, content, className = "" }: FeedbackSectionProps) => (
+const FeedbackSection = ({
+  title,
+  icon,
+  expanded,
+  toggleExpanded,
+  content,
+  className = "",
+}: FeedbackSectionProps) => (
   <div className={`${className}`}>
     <button
       onClick={toggleExpanded}
       className="w-full p-4 sm:p-6 text-left flex items-center justify-between focus:outline-none"
     >
       <div className="flex items-center">
-        <div className="text-purple-600 mr-3">{icon}</div>
-        <h3 className="font-semibold text-gray-800 text-sm sm:text-base">{title}</h3>
+        <div className="mr-3">{icon}</div>
+        <h3 className="font-grotesk font-bold text-black text-sm sm:text-base">
+          {title}
+        </h3>
       </div>
-      {expanded ?
-        <ChevronUp className="h-5 w-5 text-gray-500" /> :
-        <ChevronDown className="h-5 w-5 text-gray-500" />
-      }
+      {expanded ? (
+        <ChevronUp className="h-5 w-5 text-neutral-500" />
+      ) : (
+        <ChevronDown className="h-5 w-5 text-neutral-500" />
+      )}
     </button>
     {expanded && (
       <div className="px-4 sm:px-6 pb-4 sm:pb-6">
-        {typeof content === 'string' ? (
-          <p className="text-gray-700 text-sm sm:text-base">{content}</p>
+        {typeof content === "string" ? (
+          <p className="text-neutral-700 text-sm sm:text-base">{content}</p>
         ) : (
           content
         )}
