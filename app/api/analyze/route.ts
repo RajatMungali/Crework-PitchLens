@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+import {
+  GoogleGenerativeAI,
+  SchemaType,
+  type Schema,
+} from "@google/generative-ai";
 
 // Note: `export const config = { api: { bodyParser: ... } }` is a Pages Router
 // convention and has no effect on an App Router route.ts — removed. File size
@@ -39,7 +43,7 @@ For each slide, write a single paragraph that starts with what's working (if any
 
 Output must be valid JSON only — no markdown fences, no commentary before or after.`;
 
-const responseSchema = {
+const responseSchema: Schema = {
   type: SchemaType.OBJECT,
   properties: {
     score: { type: SchemaType.NUMBER },
