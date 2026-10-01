@@ -7,37 +7,35 @@ import {
   LineChart,
   Clock,
   UploadCloud,
-  BadgeCheck,
+  Lock,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
 
 const features = [
-  {
-    icon: <Sparkles className="h-6 w-6" />,
-    title: "AI-Powered Analysis",
-    description:
-      "Deep analysis of your deck\u2019s content, structure, and narrative — benchmarked against decks that raised.",
-    big: true,
-  },
+  // {
+  //   icon: <Sparkles className="h-6 w-6" />,
+  //   title: "Investor lens",
+  //   description:
+  //     "Reads your deck the way a seed investor would, benchmarked against [X] decks that raised.",
+  // },
   {
     icon: <Target className="h-6 w-6" />,
-    title: "Slide-by-Slide Feedback",
-    description:
-      "Concrete, specific notes on every slide — not generic advice.",
+    title: "Slide by slide notes",
+    description: "Specific notes on every slide, not generic advice.",
   },
   {
     icon: <LineChart className="h-6 w-6" />,
-    title: "Comprehensive Scoring",
+    title: "Scores that matter",
     description:
-      "Scores across clarity, structure, spelling, and overall investor-readiness.",
+      "Story, problem, market, traction, team, the ask and build readiness.",
   },
   {
     icon: <Clock className="h-6 w-6" />,
-    title: "Instant Results",
-    description: "Upload a PDF, get a full breakdown back in seconds.",
+    title: "One fix first",
+    description: "The single change that will move your score the most.",
   },
 ];
 
@@ -49,7 +47,7 @@ const steps = [
   },
   {
     number: "02",
-    title: "AI reviews it",
+    title: "We read it like an investor would",
     description:
       "We analyze every slide for clarity, structure, and investor readiness.",
   },
@@ -61,46 +59,15 @@ const steps = [
   },
 ];
 
-const TYPED_WORDS = ["investor-ready.", "fundable.", "backable.", "sharper."];
-
-function useTypewriter(words: string[]) {
-  const [wordIndex, setWordIndex] = useState(0);
-  const [text, setText] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  useEffect(() => {
-    const current = words[wordIndex % words.length];
-    const typingSpeed = isDeleting ? 45 : 90;
-    const atEnd = !isDeleting && text === current;
-    const atStart = isDeleting && text === "";
-
-    const timeout = setTimeout(() => {
-      if (atEnd) {
-        setTimeout(() => setIsDeleting(true), 1200);
-        return;
-      }
-      if (atStart) {
-        setIsDeleting(false);
-        setWordIndex((i) => (i + 1) % words.length);
-        return;
-      }
-      setText((prev) =>
-        isDeleting
-          ? current.slice(0, prev.length - 1)
-          : current.slice(0, prev.length + 1),
-      );
-    }, typingSpeed);
-
-    return () => clearTimeout(timeout);
-  }, [text, isDeleting, wordIndex, words]);
-
-  return text;
-}
+const subscores = [
+  { label: "Story", value: 82 },
+  { label: "Traction", value: 61 },
+  { label: "Build readiness", value: 48 },
+];
 
 export default function Home() {
   const router = useRouter();
   const [isUploading, setIsUploading] = useState(false);
-  const typed = useTypewriter(TYPED_WORDS);
 
   const handleAnalyzeDeck = () => {
     setIsUploading(true);
@@ -115,7 +82,6 @@ export default function Home() {
         {/* HERO */}
         <section className="container mx-auto px-4 pt-16 pb-24">
           <div className="relative mx-auto max-w-6xl rounded-3xl border-2 border-black bg-beige px-6 py-16 md:px-16 md:py-20">
-            {/* texture layers — own rounded+clipped layer so it doesn't cut off the floating pieces below */}
             <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
               <div className="absolute inset-0 bg-dot-grid" />
               <div className="absolute inset-0 bg-noise" />
@@ -133,21 +99,16 @@ export default function Home() {
                 transition={{ duration: 0.6 }}
               >
                 <p className="mb-4 inline-block rounded-full border-2 border-black bg-white px-3 py-1 font-grotesk text-xs font-semibold uppercase tracking-wide">
-                  Built for Overnight CTO founders
+                  Free tool by Crework Labs for pre-seed and seed founders
                 </p>
                 <h1 className="font-grotesk text-5xl font-bold leading-[1.05] tracking-tight text-black md:text-6xl">
-                  Get your pitch deck
-                  <br />
-                  <span className="relative inline-block bg-black px-2 text-white">
-                    {typed}
-                    <span className="cursor-blink ml-0.5 inline-block w-[3px] translate-y-0.5 bg-white align-middle h-[0.85em]" />
-                  </span>
+                  Know what investors will question before they see your deck.
                 </h1>
-                <p className="mt-6 max-w-md text-lg leading-relaxed text-neutral-700">
-                  Instant, brutally honest AI feedback on your deck —
-                  benchmarked against decks that actually raised. Built by
-                  Crework Labs for early-stage founders.
-                </p>
+                {/* <p className="mt-6 max-w-md text-lg leading-relaxed text-neutral-700">
+                  Get a score, slide by slide notes and the one fix that matters
+                  most. Benchmarked against [X] decks that raised. Free, no sign
+                  up.
+                </p> */}
 
                 <motion.button
                   onClick={handleAnalyzeDeck}
@@ -157,57 +118,71 @@ export default function Home() {
                   className="mt-8 inline-flex items-center gap-2 rounded-full border-2 border-black bg-black px-7 py-3.5 font-grotesk text-lg font-bold text-white shadow-comic comic-press"
                 >
                   <UploadCloud className="h-5 w-5" />
-                  Analyze the deck
+                  Analyze my deck
                 </motion.button>
+
+                <p className="mt-4 flex items-center gap-1.5 text-sm text-neutral-500">
+                  <Lock className="h-3.5 w-3.5" />
+                  Your deck is never stored or used to train models.
+                </p>
               </motion.div>
 
               <div className="relative hidden md:block">
-                {/* central deck mockup — stays put, everything else floats around it */}
+                {/* sample report preview card — replaces the old floating score badge */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.94 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5 }}
-                  className="relative z-10 rounded-2xl border-2 border-black bg-white p-4 shadow-comic-lg"
+                  className="relative z-10 w-80 rounded-2xl border-2 border-black bg-white p-5 shadow-comic-lg"
                 >
-                  <div className="mb-3 flex gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full border-2 border-black bg-white" />
-                    <span className="h-2.5 w-2.5 rounded-full border-2 border-black bg-white" />
-                    <span className="h-2.5 w-2.5 rounded-full border-2 border-black bg-white" />
+                  <span className="text-[11px] font-semibold uppercase tracking-wide text-neutral-400">
+                    Sample report
+                  </span>
+
+                  <div className="mb-4 mt-2 flex items-baseline gap-2">
+                    <span className="font-grotesk text-4xl font-bold leading-none text-black">
+                      74
+                    </span>
+                    <span className="text-sm text-neutral-500">
+                      /100 investor readiness
+                    </span>
                   </div>
-                  <div className="space-y-2.5">
-                    <div className="h-3 w-2/3 rounded bg-black" />
-                    <div className="h-2 w-full rounded bg-neutral-200" />
-                    <div className="h-2 w-5/6 rounded bg-neutral-200" />
-                    <div className="mt-4 h-2 w-1/2 rounded bg-neutral-200" />
-                    <div className="h-2 w-3/4 rounded bg-neutral-200" />
+
+                  <div className="mb-4 space-y-2 border-y-2 border-black py-3">
+                    {subscores.map((s) => (
+                      <div
+                        key={s.label}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <span className="text-neutral-700">{s.label}</span>
+                        <span className="font-grotesk font-bold text-black">
+                          {s.value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mb-3 rounded-lg border-2 border-black bg-beige p-3">
+                    <p className="mb-1 text-[10px] font-semibold uppercase text-neutral-500">
+                      Slide 4 · Market
+                    </p>
+                    <p className="text-sm text-neutral-800">
+                      TAM is top down only. Add a bottom up number investors can
+                      check.
+                    </p>
+                  </div>
+
+                  <div className="rounded-lg border-2 border-black bg-beige p-3">
+                    <p className="mb-1 text-[10px] font-semibold uppercase text-neutral-500">
+                      Fix this first
+                    </p>
+                    <p className="text-sm font-medium text-black">
+                      Move traction to slide 2. It&apos;s your strongest proof.
+                    </p>
                   </div>
                 </motion.div>
 
-                {/* floating score badge — top right, mirrors the top-right torn-paper piece in the reference */}
-                <motion.div
-                  initial={{ opacity: 0, rotate: 14, y: -10 }}
-                  animate={{ opacity: 1, rotate: [10, 5, 10], y: [0, -5, 0] }}
-                  transition={{
-                    opacity: { duration: 0.5, delay: 0.3 },
-                    rotate: {
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    },
-                    y: { duration: 3, repeat: Infinity, ease: "easeInOut" },
-                  }}
-                  className="absolute -right-8 -top-10 z-20 flex flex-col items-center gap-0.5 rounded-2xl border-2 border-black bg-white px-4 py-3 shadow-comic"
-                >
-                  <BadgeCheck className="h-5 w-5" />
-                  <span className="font-grotesk text-xl font-bold leading-none">
-                    86
-                  </span>
-                  <span className="text-[10px] font-medium uppercase text-neutral-500">
-                    Score
-                  </span>
-                </motion.div>
-
-                {/* floating slide fragment — bottom left, mirrors the bottom-left torn-paper piece in the reference */}
+                {/* floating slide fragment */}
                 <motion.div
                   initial={{ opacity: 0, rotate: -16, y: 10 }}
                   animate={{ opacity: 1, rotate: [-12, -7, -12], y: [0, 6, 0] }}
@@ -229,7 +204,7 @@ export default function Home() {
                   </div>
                 </motion.div>
 
-                {/* small orbiting sparkle — top left, extra bit of life */}
+                {/* small orbiting sparkle */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1, rotate: 360 }}
@@ -237,7 +212,7 @@ export default function Home() {
                     opacity: { duration: 0.5, delay: 0.6 },
                     rotate: { duration: 8, repeat: Infinity, ease: "linear" },
                   }}
-                  className="absolute -left-6 top-6 z-20 flex h-9 w-9 items-center justify-center rounded-full border-2 border-black bg-beige shadow-comic-sm"
+                  className="absolute -left-6 -top-6 z-20 flex h-9 w-9 items-center justify-center rounded-full border-2 border-black bg-beige shadow-comic-sm"
                 >
                   <Sparkles className="h-4 w-4" />
                 </motion.div>
@@ -258,7 +233,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
+          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -267,36 +242,17 @@ export default function Home() {
                 whileHover={{ y: -6, rotate: index % 2 === 0 ? -0.6 : 0.6 }}
                 transition={{ duration: 0.4, delay: index * 0.08 }}
                 viewport={{ once: true }}
-                className={`rounded-2xl border-2 border-black p-6 shadow-comic-sm transition-shadow hover:shadow-comic ${
-                  feature.big
-                    ? "bg-black text-white lg:col-span-2 lg:row-span-2 flex flex-col justify-between"
-                    : "bg-white"
-                }`}
+                className="rounded-2xl border-2 border-black bg-white p-6 shadow-comic-sm transition-shadow hover:shadow-comic"
               >
-                <div>
-                  <div
-                    className={`mb-4 flex h-11 w-11 items-center justify-center rounded-xl border-2 border-black ${
-                      feature.big ? "bg-white text-black" : "bg-beige"
-                    }`}
-                  >
-                    {feature.icon}
-                  </div>
-                  <h3 className="font-grotesk text-lg font-bold">
-                    {feature.title}
-                  </h3>
-                  <p
-                    className={`mt-2 text-sm leading-relaxed ${
-                      feature.big ? "text-neutral-300" : "text-neutral-600"
-                    }`}
-                  >
-                    {feature.description}
-                  </p>
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl border-2 border-black bg-beige">
+                  {feature.icon}
                 </div>
-                {feature.big && (
-                  <span className="mt-6 font-grotesk text-xs font-semibold uppercase tracking-wide text-neutral-400">
-                    The core engine →
-                  </span>
-                )}
+                <h3 className="font-grotesk text-lg font-bold">
+                  {feature.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-neutral-600">
+                  {feature.description}
+                </p>
               </motion.div>
             ))}
           </div>
@@ -349,7 +305,7 @@ export default function Home() {
             className="mt-8 inline-flex items-center gap-2 rounded-full border-2 border-black bg-black px-7 py-3.5 font-grotesk text-lg font-bold text-white shadow-comic comic-press"
           >
             <UploadCloud className="h-5 w-5" />
-            Analyze the deck
+            Analyze my deck
           </motion.button>
         </section>
       </main>

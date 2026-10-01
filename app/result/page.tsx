@@ -11,6 +11,10 @@ import {
   ChevronDown,
   ChevronUp,
   Target,
+  Wrench,
+  Linkedin,
+  Download,
+  ArrowUpRight,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
@@ -43,7 +47,7 @@ function App() {
     <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
 
-      <main className="flex-grow container mx-auto px-4 py-12">
+      <main className="flex-grow container mx-auto px-4 pt-20 pb-12">
         {!analysisResults ? (
           <FileUpload
             isUploading={isUploading}
@@ -117,7 +121,7 @@ const FileUpload = ({
     if (files?.[0]) {
       const file = files[0];
 
-      if (file.size > 5 * 1024 * 1024) {
+      if (file.size > 4.5 * 1024 * 1024) {
         setErrorMessage("File size must be less than 4.5MB");
         return;
       }
@@ -151,8 +155,8 @@ const FileUpload = ({
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to analyze pitch deck");
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Failed to analyze pitch deck");
         }
 
         const data = await response.json();
@@ -266,6 +270,7 @@ interface ResultsPageProps {
     structure: number;
     deckLength: number;
     clarity: number;
+    buildReadiness: number;
     slideBySlideReview?: SlideReview[];
     feedback: {
       content: string;
@@ -289,6 +294,24 @@ interface SlideReview {
   title: string;
   review: string;
 }
+
+const KEEP_GOING_LINKS = [
+  {
+    title: "FounderOS",
+    description: "Run your startup ops in one place.",
+    href: "https://crework-founderos.vercel.app",
+  },
+  {
+    title: "Idea to Impact",
+    description: "A newsletter on building from zero.",
+    href: "https://substack.com/@ideatoimpactbysj",
+  },
+  {
+    title: "Crework Labs",
+    description: "See everything else we build for founders.",
+    href: "https://www.creworklabs.com",
+  },
+];
 
 const ResultsPage = ({
   analysisResults,
@@ -325,6 +348,96 @@ const ResultsPage = ({
     } else {
       setExpandedSection(section);
     }
+  };
+
+  const roundedScore = Math.round(analysisResults.score);
+  const shareText = `My deck scored ${roundedScore} on PitchLens`;
+
+  const handleShareLinkedIn = () => {
+    const siteUrl = "https://creworkpitchlens.vercel.app";
+
+    const postText = [
+      `I just ran my pitch deck through PitchLens by Crework Labs and scored ${roundedScore}/100.`,
+      ``,
+      `It reviewed every slide, flagged what investors would push back on, and showed me exactly what to fix before my next pitch.`,
+      ``,
+      `Raising soon? See how your deck scores 👉 ${siteUrl}`,
+      ``,
+    ].join("\n");
+
+    // Open the tab first: browsers block popups opened after an await.
+    window.open(
+      `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(postText)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
+
+    // Download the score image so the user can attach it to the post.
+    handleDownloadImage();
+
+    // Fallback in case LinkedIn stops prefilling the text.
+    navigator.clipboard?.writeText(postText).catch(() => {});
+  };
+
+  const handleDownloadImage = () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1080;
+    canvas.height = 1080;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // background
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // border
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 8;
+    ctx.strokeRect(24, 24, canvas.width - 48, canvas.height - 48);
+
+    // corner dots
+    ctx.fillStyle = "#ffffff";
+    [
+      [24, 24],
+      [canvas.width - 24, 24],
+      [24, canvas.height - 24],
+      [canvas.width - 24, canvas.height - 24],
+    ].forEach(([x, y]) => {
+      ctx.beginPath();
+      ctx.arc(x, y, 14, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.lineWidth = 4;
+      ctx.stroke();
+    });
+
+    ctx.fillStyle = "#000000";
+    ctx.textAlign = "center";
+
+    ctx.font = "600 32px sans-serif";
+    ctx.fillText("MY PITCH DECK SCORED", canvas.width / 2, 340);
+
+    ctx.font = "bold 320px sans-serif";
+    ctx.fillText(String(roundedScore), canvas.width / 2, 640);
+
+    ctx.font = "600 32px sans-serif";
+    ctx.fillText("ON", canvas.width / 2, 720);
+
+    ctx.font = "bold 64px sans-serif";
+    ctx.fillText("PitchLens", canvas.width / 2, 800);
+
+    ctx.font = "400 24px sans-serif";
+    ctx.fillStyle = "#555555";
+    ctx.fillText("by Crework Labs", canvas.width / 2, 850);
+
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `pitchlens-score-${roundedScore}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
   };
 
   const renderSlideReviews = () => {
@@ -391,7 +504,7 @@ const ResultsPage = ({
             </div>
             <div className="flex flex-col items-center gap-1.5 rounded-2xl border-2 border-black bg-black px-5 py-3 text-white">
               <span className="font-grotesk text-3xl font-bold leading-none">
-                {analysisResults.score.toFixed(0)}
+                {roundedScore}
               </span>
               <span className="flex items-center gap-1.5 text-xs font-medium text-neutral-300">
                 <span
@@ -438,6 +551,12 @@ const ResultsPage = ({
               value={analysisResults.clarity}
               icon={<Award className="h-5 w-5" />}
             />
+            <MetricCard
+              title="Build Readiness"
+              value={analysisResults.buildReadiness}
+              icon={<Wrench className="h-5 w-5" />}
+              badge="new"
+            />
 
             {pdfContent && (
               <MetricCard
@@ -449,6 +568,28 @@ const ResultsPage = ({
             )}
           </div>
         </div>
+
+        {analysisResults.buildReadiness < 60 && (
+          <div className="mt-4 rounded-2xl border-2 border-black bg-black p-5 sm:p-6 text-white shadow-comic">
+            <p className="font-grotesk text-lg font-bold">
+              Investors will ask who&apos;s building this.
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-neutral-300">
+              Crework&apos;s Overnight CTO team ships production MVPs in 3 to 4
+              weeks. NailFound went live with 50+ artists signed up in its first
+              week.
+            </p>
+            <a
+              href="https://www.creworklabs.com/overnight-cto"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 inline-flex items-center gap-2 rounded-full border-2 border-white bg-white px-5 py-2.5 font-grotesk text-sm font-semibold text-black shadow-comic-sm comic-press"
+            >
+              See how Overnight CTO works
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
+          </div>
+        )}
 
         <div className="mt-4 rounded-2xl border-2 border-black bg-white shadow-comic-sm overflow-hidden">
           <FeedbackSection
@@ -503,6 +644,30 @@ const ResultsPage = ({
           </div>
         </div>
 
+        <div className="mt-4 rounded-2xl border-2 border-black bg-beige p-5 sm:p-6 text-center shadow-comic-sm">
+          <p className="font-grotesk text-lg font-bold text-black">
+            {shareText}
+          </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+            <button
+              onClick={handleShareLinkedIn}
+              type="button"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-black bg-black px-5 py-2.5 font-grotesk text-sm font-semibold text-white shadow-comic-sm comic-press"
+            >
+              <Linkedin className="h-4 w-4" />
+              Share on LinkedIn
+            </button>
+            <button
+              onClick={handleDownloadImage}
+              type="button"
+              className="inline-flex items-center gap-2 rounded-full border-2 border-black bg-white px-5 py-2.5 font-grotesk text-sm font-semibold text-black shadow-comic-sm comic-press"
+            >
+              <Download className="h-4 w-4" />
+              Download image
+            </button>
+          </div>
+        </div>
+
         <div className="mt-6 flex justify-center">
           <motion.button
             onClick={onReupload}
@@ -528,6 +693,33 @@ const ResultsPage = ({
             </svg>
           </motion.button>
         </div>
+
+        <div className="mt-16">
+          <h2 className="mb-4 text-center font-grotesk text-sm font-semibold uppercase tracking-wide text-neutral-500">
+            Keep going
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {KEEP_GOING_LINKS.map((link) => (
+              <a
+                key={link.title}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group rounded-2xl border-2 border-black bg-white p-5 shadow-comic-sm transition-shadow hover:shadow-comic"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-grotesk font-bold text-black">
+                    {link.title}
+                  </span>
+                  <ArrowUpRight className="h-4 w-4 text-neutral-400 transition-colors group-hover:text-black" />
+                </div>
+                <p className="mt-1 text-sm text-neutral-600">
+                  {link.description}
+                </p>
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
     </motion.div>
   );
@@ -538,9 +730,16 @@ interface MetricCardProps {
   value: number | string;
   icon: React.ReactNode;
   suffix?: string;
+  badge?: string;
 }
 
-const MetricCard = ({ title, value, icon, suffix = "" }: MetricCardProps) => (
+const MetricCard = ({
+  title,
+  value,
+  icon,
+  suffix = "",
+  badge,
+}: MetricCardProps) => (
   <div className="rounded-xl border-2 border-black bg-white p-3 sm:p-4 shadow-comic-sm">
     <div className="flex justify-between items-center">
       <div className="flex items-center">
@@ -548,6 +747,11 @@ const MetricCard = ({ title, value, icon, suffix = "" }: MetricCardProps) => (
         <h3 className="text-xs sm:text-sm font-medium text-neutral-700 ml-2">
           {title}
         </h3>
+        {badge && (
+          <span className="ml-1.5 text-[10px] font-semibold uppercase text-neutral-400">
+            {badge}
+          </span>
+        )}
       </div>
       <span className="font-grotesk text-base sm:text-xl font-bold text-black">
         {value}

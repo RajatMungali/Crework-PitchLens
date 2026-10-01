@@ -6,9 +6,34 @@ import { Analytics } from "@vercel/analytics/react";
 const outfit = Outfit({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Crework Pitch Deck Analyzer",
+  // TODO: set this to your final domain once you rename the Vercel project
+  // (e.g. "https://pitchlens.vercel.app") — required for OG/Twitter images
+  // to resolve to an absolute URL instead of a relative one.
+  metadataBase: new URL("https://creworkpitchlens.vercel.app"),
+  title: "PitchLens by Crework Labs",
   description:
-    "Get instant feedback on your pitch deck with our AI-powered analyzer. Improve your pitch and increase your chances of success.",
+    "Free AI pitch deck review for early stage founders. Get a score, slide by slide notes and the one fix that matters most in under a minute.",
+  openGraph: {
+    title: "PitchLens by Crework Labs",
+    description:
+      "Free AI pitch deck review for early stage founders. Get a score, slide by slide notes and the one fix that matters most in under a minute.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "PitchLens by Crework Labs",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PitchLens by Crework Labs",
+    description:
+      "Free AI pitch deck review for early stage founders. Get a score, slide by slide notes and the one fix that matters most in under a minute.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
