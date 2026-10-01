@@ -9,18 +9,11 @@ import {
   UploadCloud,
   Lock,
 } from "lucide-react";
-import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
 
 const features = [
-  // {
-  //   icon: <Sparkles className="h-6 w-6" />,
-  //   title: "Investor lens",
-  //   description:
-  //     "Reads your deck the way a seed investor would, benchmarked against [X] decks that raised.",
-  // },
   {
     icon: <Target className="h-6 w-6" />,
     title: "Slide by slide notes",
@@ -67,10 +60,8 @@ const subscores = [
 
 export default function Home() {
   const router = useRouter();
-  const [isUploading, setIsUploading] = useState(false);
 
   const handleAnalyzeDeck = () => {
-    setIsUploading(true);
     router.push("/result");
   };
 
@@ -104,11 +95,10 @@ export default function Home() {
                 <h1 className="font-grotesk text-5xl font-bold leading-[1.05] tracking-tight text-black md:text-6xl">
                   Know what investors will question before they see your deck.
                 </h1>
-                {/* <p className="mt-6 max-w-md text-lg leading-relaxed text-neutral-700">
+                <p className="mt-6 max-w-md text-lg leading-relaxed text-neutral-700">
                   Get a score, slide by slide notes and the one fix that matters
-                  most. Benchmarked against [X] decks that raised. Free, no sign
-                  up.
-                </p> */}
+                  most. Free, no sign up.
+                </p>
 
                 <motion.button
                   onClick={handleAnalyzeDeck}
@@ -128,7 +118,7 @@ export default function Home() {
               </motion.div>
 
               <div className="relative hidden md:block">
-                {/* sample report preview card — replaces the old floating score badge */}
+                {/* sample report preview card */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.94 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -221,7 +211,7 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FEATURES — bento grid */}
+        {/* FEATURES */}
         <section className="container mx-auto px-4 pb-24">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="font-grotesk text-3xl font-bold text-black md:text-4xl">
@@ -233,7 +223,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
